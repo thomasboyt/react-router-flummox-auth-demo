@@ -2,31 +2,23 @@ import React from 'react';
 import FluxComponent from 'flummox/component';
 
 class LoadUserInner extends React.Component {
-  constructor() {
-    super();
-
-    this.handleUnauthorized = (...args) => this._handleUnauthorized(args);
-  }
-
   componentDidMount() {
     this.props.flux.getActions('auth').loadUser();
-
-    this.props.flux.getStore('auth').addListener('unauthorized', this.handleUnauthorized);
   }
 
-  componentWillUnmount() {
-    this.props.flux.getStore('auth').removeListener('unauthorized', this.handleUnauthorized);
-  }
-
-  _handleUnauthorized() {
-    this.context.router.replaceWith('login');
+  componentDidUpdate() {
+    if (this.props.loadUserState === 'failure' &&
+        this.props.loadUserError.status === 401) {
+       this.context.router.replaceWith('login');
+    }
   }
 
   render() {
     if (this.props.loadUserState === 'success') {
       return this.props.children;
 
-    } else if (this.props.loadUserState === 'failure') {
+    } else if (this.props.loadUserState === 'failure' &&
+               this.props.loadUserError.status !== 401) {
       return (
         <p>
           failed to load current user :(

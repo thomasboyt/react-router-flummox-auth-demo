@@ -54,10 +54,6 @@ class AuthStore extends Store {
       loadUserState: 'failure',
       loadUserError: err
     });
-
-    if (err.status === 401) {
-      this.emit('unauthorized');
-    }
   }
 
   logInStart() {
@@ -73,8 +69,6 @@ class AuthStore extends Store {
     });
 
     localStorage.token = resp.token;
-
-    this.emit('loggedIn');
   }
 
   logInFailed(err) {
